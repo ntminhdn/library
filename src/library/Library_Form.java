@@ -49,27 +49,38 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import object.Category;
 import data.CategoryData;
+import data.ConnectDatabase;
 import data.DataAccess;
 import data.PublisherData;
 import data.ReturnManagementData;
 import data.SupplierData;
+import java.awt.Component;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import static java.util.Collections.list;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.table.DefaultTableModel;
 import object.Publisher;
 import object.Supplier;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.event.CellEditorListener;
 import net.proteanit.sql.DbUtils;
+import object.ButtonRenderer;
 import object.ReturnManagement;
 
 /**
@@ -82,13 +93,14 @@ public class Library_Form extends javax.swing.JFrame {
      * Creates new form Library_Form
      */
     private String sql = "SELECT * FROM borrowingmanagement where ( ReturnDate < CURDATE())";
-    private DataAccess da = new DataAccess();
+    public DataAccess da = new DataAccess();
+//    private ConnectDatabase connectDatabase = new ConnectDatabase();
     private CategoryData CategoryList = new CategoryData();
     private AuthorData AuthorList = new AuthorData();
     private BookData BookList = new BookData();
     private ReaderData ReaderList = new ReaderData();
     private CategoryData clist = new CategoryData();
-    private BorrowingManagementData BorrowingList = new BorrowingManagementData();
+    public BorrowingManagementData BorrowingList = new BorrowingManagementData();
     private PublisherData PublisherList = new PublisherData();
     private SupplierData SupplierList = new SupplierData();
     private ReturnManagementData ReturnList = new ReturnManagementData();
@@ -112,7 +124,7 @@ public class Library_Form extends javax.swing.JFrame {
     Date today = ny.getToday();
 
     private String[] tenCotBorrowing = {
-        "Borrow ID", "Reader ID", "Book ID", "Borrow Date", "Return Date"
+        "Borrow ID", "Reader ID", "Book ID", "Borrow Date", "Return Date", "Add 10 Days"
     };
     private String[] tenCotReader = {
         "ID", "Name", "ID Card Number", "Sex", "Birthday", "Address", "Phone", "Email", "Activation Date", "Expired Date"
@@ -145,16 +157,14 @@ public class Library_Form extends javax.swing.JFrame {
         jPanel5.setSize(900, 600);
         jPanel6.setSize(900, 600);
 
-        
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File("D:\\CODE\\00. SOFTTECH\\9. JAVA 1\\Project\\Library_Minh\\src\\icon\\BG.jpg"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(jLabel20.getWidth(), jLabel20.getHeight(),Image.SCALE_SMOOTH));
-        jLabel20.setIcon(imageIcon);
-        
+//        BufferedImage img = null;
+//        try {
+//            img = ImageIO.read(new File("D:\\CODE\\00. SOFTTECH\\9. JAVA 1\\Project\\Library_Minh\\src\\icon\\BG.jpg"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(jLabel20.getWidth(), jLabel20.getHeight(), Image.SCALE_SMOOTH));
+//        jLabel20.setIcon(imageIcon);
         da.LoadData(sql, tbPhieuQuaHan);
         try {
             String sql1 = "SELECT SUM(Quantity) as BookSum from book";
@@ -200,7 +210,7 @@ public class Library_Form extends javax.swing.JFrame {
         for (int i = 0; i < l.size(); i++) {
             this.taBaoCao.append(l.get(i).toString() + "\n");
         }
-        
+
         //Reader
         this.tbReader.setModel(dmReader);
         dmReader.setColumnIdentifiers(tenCotReader);
@@ -212,15 +222,45 @@ public class Library_Form extends javax.swing.JFrame {
         //Borrowing Management
         this.tbBorrowingManagement.setModel(dmBorrowing);
         dmBorrowing.setColumnIdentifiers(tenCotBorrowing);
+        
+        
+        tbBorrowingManagement.getColumn("Add 10 Days").setCellRenderer(new ButtonRenderer());
+        ButtonEditor buttonEditor = new ButtonEditor(new JCheckBox());
+        tbBorrowingManagement.getColumn("Add 10 Days").setCellEditor(buttonEditor);
+        buttonEditor.button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int donghh = tbBorrowingManagement.getSelectedRow();
+                String BrIDhh = tbBorrowingManagement.getValueAt(donghh, 0).toString();
+                String RdIDhh = tbBorrowingManagement.getValueAt(donghh, 1).toString();
+                String BookIDhh = tbBorrowingManagement.getValueAt(donghh, 2).toString();
+                Date BorrowDatehh = carBorrowDate.getDate();
+
+                System.out.println(nextday);
+                System.out.println(today);
+
+//                da.updateDB("update borrowingmanagement set ReturnDate = '" + nextday + "' where BorrowID = '" + BrIDhh + "'");
+//                System.out.println("update borrowingmanagement set ReturnDate = '" + nextday + "' where BorrowID = '" + BrIDhh + "'");
+                BorrowingManagement r = new BorrowingManagement(BrIDhh, RdIDhh, BookIDhh, BorrowDatehh, nextday);
+                Vector vt = r.toVector();
+
+                try {
+                    BorrowingList.suaReturnDate(donghh, r);
+                } catch (Exception ex) {
+                    Logger.getLogger(Library_Form.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                dmBorrowing.removeRow(donghh);
+                dmBorrowing.insertRow(donghh, vt);
+//                disableCarlendarBorrow();
+
+            }
+        });
         BorrowingList.load("Select * from borrowingmanagement");
+        
         for (BorrowingManagement r : BorrowingList.getList()) {
             dmBorrowing.addRow(r.toVector());
         }
-//        if (dmBorrowing.getRowCount() == 0) {
-//            tfBorrowID.setText("1");
-//        } else {
-//            tfBorrowID.setText(String.valueOf(Integer.parseInt(dmBorrowing.getValueAt(dmBorrowing.getRowCount() - 1, 0).toString()) + 1));
-//        }
+        
 
         //Book
         this.tbBookAdmin.setModel(dmBook);
@@ -270,7 +310,7 @@ public class Library_Form extends javax.swing.JFrame {
         this.tbReturn.setModel(dmReturn);
         dmReturn.setColumnIdentifiers(tenCotReturn);
 
-        disableCarlendarBorrow();
+        enableCarlendarBorrow();
         disableCarlendarReader();
     }
 
@@ -1498,11 +1538,11 @@ public class Library_Form extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(btAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(btEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(52, 52, 52)
+                .addGap(18, 18, 18)
                 .addComponent(btDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(218, 218, 218)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btDelete3, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28))
         );
@@ -1544,7 +1584,7 @@ public class Library_Form extends javax.swing.JFrame {
                         .addComponent(jLabel4)
                         .addGap(18, 18, 18)
                         .addComponent(tfReaderID, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
                         .addComponent(jLabel2)
                         .addGap(18, 18, 18)
                         .addComponent(tfBookID, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -1884,7 +1924,7 @@ public class Library_Form extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel6Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel21)
-                        .addGap(202, 202, 202)
+                        .addGap(316, 316, 316)
                         .addComponent(jButton4)
                         .addGap(11, 11, 11)))
                 .addContainerGap())
@@ -2285,7 +2325,7 @@ public class Library_Form extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSearch1ActionPerformed
 
     private void btDelete3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDelete3ActionPerformed
-        // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_btDelete3ActionPerformed
 
     private void btEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEditActionPerformed
@@ -2305,7 +2345,7 @@ public class Library_Form extends javax.swing.JFrame {
         }
         dmBorrowing.removeRow(donghh);
         dmBorrowing.insertRow(donghh, vt);
-        disableCarlendarBorrow();
+//        disableCarlendarBorrow();
     }//GEN-LAST:event_btEditActionPerformed
 
     private void tbBorrowingManagementMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbBorrowingManagementMouseClicked
@@ -2337,7 +2377,7 @@ public class Library_Form extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(Library_Form.class.getName()).log(Level.SEVERE, null, ex);
         }
-        disableCarlendarBorrow();
+//        disableCarlendarBorrow();
     }//GEN-LAST:event_btDeleteActionPerformed
 
     private void btSearchReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSearchReturnActionPerformed
@@ -2447,6 +2487,7 @@ public class Library_Form extends javax.swing.JFrame {
                 new Library_Form().setVisible(true);
             }
         });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2617,18 +2658,22 @@ public class Library_Form extends javax.swing.JFrame {
     private javax.swing.JTextField tfcategoryname;
     // End of variables declaration//GEN-END:variables
 
-    private void disableCarlendarBorrow() {
+    private void enableCarlendarBorrow() {
         carBorrowDate.setDate(today2);
         carReturnDate.setDate(nextday);
-        carBorrowDate.setEnabled(false);
-        carReturnDate.setEnabled(false);
     }
+//    private void disableCarlendarBorrow() {
+//        carBorrowDate.setDate(today2);
+//        carReturnDate.setDate(nextday);
+////        carBorrowDate.setEnabled(false);
+////        carReturnDate.setEnabled(false);
+//    }
 
     private void disableCarlendarReader() {
         carActivationDate.setDate(today);
         carExpiredDate.setDate(nextyear);
-        carActivationDate.setEnabled(false);
-        carExpiredDate.setEnabled(false);
+//        carActivationDate.setEnabled(false);
+//        carExpiredDate.setEnabled(false);
     }
 
     private void viewAuthor(Author b) {
@@ -2684,6 +2729,62 @@ public class Library_Form extends javax.swing.JFrame {
         this.tfBookID.setText(b.getBookID());
         this.carBorrowDate.setDate(b.getBorrowDate());
         this.carReturnDate.setDate(b.getReturnDate());
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+
+        protected JButton button;
+        private String label;
+        private boolean isPushed;
+//        DateFormat dfExtend = new SimpleDateFormat("yyyy-MM-dd");
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+//            button.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    
+//                }
+//            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            if (isSelected) {
+                button.setForeground(table.getSelectionForeground());
+                button.setBackground(table.getSelectionBackground());
+            } else {
+                button.setForeground(table.getForeground());
+                button.setBackground(table.getBackground());
+            }
+            label = (value == null) ? "" : value.toString();
+            button.setText(label);
+            isPushed = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (isPushed) {
+
+            }
+            isPushed = false;
+            return new String(label);
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+
+        @Override
+        protected void fireEditingStopped() {
+            super.fireEditingStopped();
+        }
     }
 
 }

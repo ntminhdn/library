@@ -79,6 +79,7 @@ public class BorrowingManagement {
         v.addElement(this.BookID);
         v.addElement(d.format(this.BorrowDate));
         v.addElement(d.format(this.ReturnDate));
+        v.addElement("+");
         return v;
     }
 }

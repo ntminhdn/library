@@ -85,6 +85,16 @@ public class BorrowingManagementData {
                 + " where BorrowID='" + t.getRdID() + "'";
         da.updateData(sql);
     }
+    public void suaReturnDate(int i, BorrowingManagement t) throws Exception {
+        //sua arraylist
+        borrowingManagementList.set(i, t);
+        //sua CSDL          
+        String sql = "update borrowingmanagement set"
+                + " ReturnDate='" + df.format(t.getReturnDate()) + "'"
+                + " where BorrowID='" + t.getRdID() + "'";
+        System.out.println(sql);
+        da.updateData(sql);
+    }
 //
 
     public int xoa(String BorrowID) throws Exception {

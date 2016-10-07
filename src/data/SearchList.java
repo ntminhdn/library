@@ -25,16 +25,16 @@ public class SearchList {
     public ArrayList<Search> getList() {
         return searchList;
     }
-    
-    public void load(String sql){
+
+    public void load(String sql) {
         try {
             ResultSet rs = da.getData(sql);
             Search t;
-            while(rs.next()){
+            while (rs.next()) {
                 t = new Search(rs.getString("BookID"),
                         rs.getString("BookName"),
                         rs.getString("AuthorName"),
-                        rs.getString("SupplierName"),
+                        rs.getString("PublisherName"),
                         rs.getString("CategoryName"),
                         rs.getInt("Price"),
                         rs.getInt("Quantity"));
@@ -44,4 +44,6 @@ public class SearchList {
             Logger.getLogger(SearchList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    
 }

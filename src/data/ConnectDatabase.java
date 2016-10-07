@@ -1,6 +1,7 @@
 package data;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,5 +54,18 @@ public class ConnectDatabase {
         if (con != null && !con.isClosed()) {
             con.isClosed();
         }
+    }
+
+    public ArrayList<String> loadBookName(String sql, String name) {
+        ResultSet rs = getData(sql);
+        ArrayList<String> t = new ArrayList<>();
+        try {
+            while (rs.next()) {
+                t.add(rs.getString(name));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SearchList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return t;
     }
 }
