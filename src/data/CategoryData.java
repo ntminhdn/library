@@ -25,7 +25,7 @@ import object.Category;
 public class CategoryData {
 
     private ArrayList<Category> categoryList = new ArrayList<Category>();
-    private ConnectDatabase conn = new ConnectDatabase();
+    private DataAccess conn = new DataAccess();
 
     public ArrayList<Category> getCategoryList() {
         return categoryList;

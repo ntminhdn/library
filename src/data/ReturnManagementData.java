@@ -23,7 +23,7 @@ import object.ReturnManagement;
 public class ReturnManagementData {
     private ArrayList<ReturnManagement> returnManagementList = new ArrayList<ReturnManagement>();
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    private ConnectDatabase da = new ConnectDatabase();
+    private DataAccess da = new DataAccess();
 
     public ArrayList<ReturnManagement> getReturnList() {
         return returnManagementList;
@@ -36,6 +36,7 @@ public class ReturnManagementData {
             while (rs.next()) {
                 b = new ReturnManagement(rs.getString("BorrowID"),
                         rs.getString("BookID"),
+                        rs.getString("RdName"),
                         rs.getString("BookName"),
                         rs.getString("AuthorName"),
                         rs.getString("PublisherName"),

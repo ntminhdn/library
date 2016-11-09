@@ -5,6 +5,9 @@
  */
 package data;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -15,6 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import object.Reader;
 
 /**
@@ -25,7 +31,7 @@ public class ReaderData {
 
     private ArrayList<Reader> readerList = new ArrayList<Reader>();
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    private ConnectDatabase da = new ConnectDatabase();
+    private DataAccess da = new DataAccess();
 
     public ArrayList<Reader> getList() {
         return readerList;
@@ -115,5 +121,42 @@ public class ReaderData {
             }
         }
         return -1;
+    }
+
+    public void suaExpiredDate(int i, Reader t) throws Exception {
+        readerList.set(i, t);
+        //sua CSDL          
+        String sql = "update reader set"
+                + " ActivationDate='" + df.format(t.getActivationDate()) + "'"
+                + " ,ExpiredDate='" + df.format(t.getExpiredDate()) + "'"
+                + " where RdID='" + t.getRdID()+ "'";
+        System.out.println(sql);
+        da.updateData(sql);
+    }
+    public Icon loadIcon(String linkImage, int k, int m) {/*linkImage là tên icon, k kích thước chiều rộng mình muốn,m chiều dài và hàm này trả về giá trị là 1 icon.*/
+        try {
+            BufferedImage image = ImageIO.read(new File(linkImage));//đọc ảnh dùng BufferedImage
+
+            int x = k;
+            int y = m;
+            int ix = image.getWidth();
+            int iy = image.getHeight();
+            int dx = 0, dy = 0;
+
+            if (x / y > ix / iy) {
+                dy = y;
+                dx = dy * ix / iy;
+            } else {
+                dx = x;
+                dy = dx * iy / ix;
+            }
+
+            return new ImageIcon(image.getScaledInstance(dx, dy,
+                    image.SCALE_SMOOTH));
+
+        } catch (IOException e) {
+//            System.out.println("Err: " + e.getMessage());
+        }
+        return null;
     }
 }

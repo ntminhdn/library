@@ -135,4 +135,13 @@ public class BookData {
         }
         return null;
     }
+
+    public void updateQuantity(int sl, String id) {
+//        bookList.set(i, b);
+        String sql = "update book set "
+                + " quantity ='" + sl + "' "
+                + " where bookID='" + id + "'";
+//        System.out.println(sql);
+        da.updateDB(sql);
+    }
 }

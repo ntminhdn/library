@@ -20,6 +20,16 @@ public class Search {
     private int price;
     private int quantity;
 
+    public Search(String bookName, String authorName, String supplierName, String categoryName) {
+        this.bookName = bookName;
+        this.authorName = authorName;
+        this.supplierName = supplierName;
+        this.categoryName = categoryName;
+    }
+
+    
+
+    
     public Search(String bookID, String bookName, String authorName, String supplierName, String categoryName, int price, int quantity) {
         this.bookID = bookID;
         this.bookName = bookName;

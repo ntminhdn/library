@@ -9,6 +9,7 @@ import data.DataAccess;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
  *
@@ -36,17 +37,17 @@ public class ChangePassword extends javax.swing.JFrame {
     private void initComponents() {
 
         btChangePass = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lbCPass = new javax.swing.JLabel();
+        lbNPass = new javax.swing.JLabel();
         tfCurrentPass = new javax.swing.JPasswordField();
         tfNewPass = new javax.swing.JPasswordField();
         tfComfirm = new javax.swing.JPasswordField();
-        jLabel3 = new javax.swing.JLabel();
+        lbCNPass = new javax.swing.JLabel();
         btCancelChange = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
+        lbUserName = new javax.swing.JLabel();
         tfUserName = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btChangePass.setText("Change");
         btChangePass.addActionListener(new java.awt.event.ActionListener() {
@@ -55,11 +56,11 @@ public class ChangePassword extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Current Password");
+        lbCPass.setText("Current Password");
 
-        jLabel2.setText("New Password");
+        lbNPass.setText("New Password");
 
-        jLabel3.setText("Comfirm new password");
+        lbCNPass.setText("Comfirm New Password");
 
         btCancelChange.setText("Cancel");
         btCancelChange.addActionListener(new java.awt.event.ActionListener() {
@@ -68,19 +69,19 @@ public class ChangePassword extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("User Name");
+        lbUserName.setText("User Name");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(90, Short.MAX_VALUE)
+                .addContainerGap(89, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel4))
+                    .addComponent(lbNPass)
+                    .addComponent(lbCNPass)
+                    .addComponent(lbCPass)
+                    .addComponent(lbUserName))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
@@ -98,20 +99,20 @@ public class ChangePassword extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(30, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
+                    .addComponent(lbUserName)
                     .addComponent(tfUserName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
+                    .addComponent(lbCPass)
                     .addComponent(tfCurrentPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
+                    .addComponent(lbNPass)
                     .addComponent(tfNewPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfComfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                    .addComponent(lbCNPass))
                 .addGap(38, 38, 38)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btChangePass)
@@ -166,12 +167,7 @@ public class ChangePassword extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(ChangePassword.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -194,10 +190,10 @@ public class ChangePassword extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancelChange;
     private javax.swing.JButton btChangePass;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel lbCNPass;
+    private javax.swing.JLabel lbCPass;
+    private javax.swing.JLabel lbNPass;
+    private javax.swing.JLabel lbUserName;
     private javax.swing.JPasswordField tfComfirm;
     private javax.swing.JPasswordField tfCurrentPass;
     private javax.swing.JPasswordField tfNewPass;

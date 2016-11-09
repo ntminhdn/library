@@ -135,6 +135,7 @@ public class Reader {
         v.addElement(this.Email);
         v.addElement(d.format(this.ActivationDate));
         v.addElement(d.format(this.ExpiredDate));
+        v.addElement("+");
         return v;
     }
 //    @Override

@@ -24,17 +24,10 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="65" max="32767" attributes="0"/>
-              <Component id="btLogin" min="-2" pref="91" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="btCancel" min="-2" pref="91" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="72" max="-2" attributes="0"/>
-          </Group>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lbUsername" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="lbUsername1" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="lbPassword" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -44,6 +37,23 @@
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace pref="57" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="lblCapcha" min="-2" pref="99" max="-2" attributes="0"/>
+                  <Component id="btLogin" min="-2" pref="91" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="btCancel" alignment="0" min="-2" pref="91" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jTextField1" min="-2" pref="107" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" pref="28" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -51,7 +61,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lbUsername" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lbUsername1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfUsername" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -59,7 +69,13 @@
                   <Component id="lbPassword" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jpPassword" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblCapcha" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="19" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btCancel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btLogin" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -70,7 +86,7 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="lbUsername">
+    <Component class="javax.swing.JLabel" name="lbUsername1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Username: "/>
       </Properties>
@@ -94,6 +110,9 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btLoginActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Action buttonActionSearchClient = new AbstractAction(&quot;Login&quot;,new javax.swing.ImageIcon(getClass().getResource(&quot;/icon/key.png&quot;))) {&#xa; &#xa;    @Override&#xa;    public void actionPerformed(ActionEvent evt) {&#xa;        try {&#xa;            // TODO add your handling code here:&#xa;            ResultSet rs = data.getData(&quot;Select * from admin &quot;&#xa;                    + &quot;where UserName=&apos;&quot; + tfUsername.getText() + &quot;&apos;&quot;);&#xa;            if (!tfUsername.equals(&quot;&quot;)) {&#xa;                if (rs.next()) {&#xa;                    String userNameDB = rs.getString(&quot;UserName&quot;);&#xa;                    String passwordDB = rs.getString(&quot;Pass&quot;);&#xa;                    if (userNameDB.equals(tfUsername.getText()) &amp;&amp;  jTextField1.getText().equalsIgnoreCase(lblCapcha.getText())  &amp;&amp; passwordDB.equals(new String(jpPassword.getPassword()))) {&#xa;//                        JOptionPane.showMessageDialog(this, &quot;Login successfully&quot;);&#xa;                        new library.Form_Library().setVisible(true);&#xa;                        dispose();&#xa;                    } else {&#xa;                        JOptionPane.showMessageDialog(null, &quot;Login not successfully&quot;);&#xa;                    }&#xa;                } else {&#xa;                    JOptionPane.showMessageDialog(null, &quot;Login not successfully&quot;);&#xa;                }&#xa;            }&#xa;        } catch (SQLException ex) {&#xa;            System.out.println(&quot;Error: &quot; + ex.getMessage());;&#xa;        }&#xa;    }&#xa;};&#xa; &#xa;String keySearchClient = &quot;&quot;;&#xa; &#xa;btLogin.setAction(buttonActionSearchClient);&#xa; &#xa;buttonActionSearchClient.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);&#xa; &#xa;btLogin.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(&#xa;        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), keySearchClient);&#xa; &#xa;btLogin.getActionMap().put(keySearchClient, buttonActionSearchClient);"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JButton" name="btCancel">
       <Properties>
@@ -105,6 +124,30 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCancelActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/icon/gtk-refresh.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="  "/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabel1MouseClicked"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblCapcha">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="iCiel Brush Up" size="24" style="1"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="0" green="0" red="ff" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="            "/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextField1">
     </Component>
   </SubComponents>
 </Form>

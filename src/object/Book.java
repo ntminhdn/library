@@ -155,6 +155,7 @@ public class Book {
         v.addElement(this.rowNum);
         v.addElement(this.colNum);
         v.addElement(this.image);
+        
         return v;
     }
 }

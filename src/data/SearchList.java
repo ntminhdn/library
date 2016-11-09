@@ -44,6 +44,4 @@ public class SearchList {
             Logger.getLogger(SearchList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    
 }

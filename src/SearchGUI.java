@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import data.ConnectDatabase;
+import data.DataAccess;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,11 +29,12 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import data.SearchList;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import library.ChangePassword;
+import java.util.Comparator;
+import javax.swing.Action;
+import javax.swing.UIManager;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import static library.Form_Library.resizeColumnWidth;
 import library.Login;
 import object.Search;
 
@@ -47,7 +47,7 @@ public class SearchGUI extends javax.swing.JFrame {
     private SearchList list = new SearchList();
     DefaultTableModel dm = new DefaultTableModel();
     private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    ConnectDatabase con = new ConnectDatabase();
+    DataAccess con = new DataAccess();
 
     //private CategoryList clist = new CategoryList();
     private String[] tenCot = {
@@ -75,7 +75,22 @@ public class SearchGUI extends javax.swing.JFrame {
         for (Search s : list.getList()) {
             this.dm.addRow(s.toVector());
         }
-        AutoSuggestor autoSuggestor = new AutoSuggestor(tfSearch, this, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f) {
+        resizeColumnWidth(tbResult);
+        TableRowSorter<TableModel> sorter2 = new TableRowSorter<>(tbResult.getModel());
+        tbResult.setRowSorter(sorter2);
+        sorter2.setComparator(5, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1 - o2;
+            }
+        });
+        sorter2.setComparator(6, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1 - o2;
+            }
+        });
+        AutoSuggestor autoSuggestor = new AutoSuggestor(tfSearch, this, null, Color.BLACK.brighter(), Color.WHITE, Color.RED, 1.00f) {
             @Override
             boolean wordTyped(String typedWord) {
                 String sql0 = "Select bookname,authorname,publishername,categoryname"
@@ -83,43 +98,46 @@ public class SearchGUI extends javax.swing.JFrame {
                         + " join author a on b.AuthorID = a.AuthorID"
                         + " join publisher s on b.PublisherID = s.PublisherID";
                 //create list for dictionary this in your case might be done via calling a method which queries db and returns results as arraylist
-//                ArrayList<String> words = new ArrayList<String>();
                 ArrayList<String> BookNameList = new ArrayList<String>();
                 ArrayList<String> AuthorNameList = new ArrayList<String>();
                 ArrayList<String> PublisherNameList = new ArrayList<String>();
                 ArrayList<String> CategoryNameList = new ArrayList<String>();
-                BookNameList = con.loadBookName("select BookName from book","BookName");
-                for (String string : BookNameList) {
-                    System.out.println(string);
+                BookNameList = con.loadBookName("select BookName from book", "BookName");
+//                for (String string : BookNameList) {
+//                    System.out.println(string);
+//                }
+                AuthorNameList = con.loadBookName("select AuthorName from author", "AuthorName");
+//                for (String string : AuthorNameList) {
+//                    System.out.println(string);
+//                }
+                PublisherNameList = con.loadBookName("select PublisherName from publisher", "PublisherName");
+//                for (String string : PublisherNameList) {
+//                    System.out.println(string);
+//                }
+                CategoryNameList = con.loadBookName("select CategoryName from category", "CategoryName");
+//                for (String string : CategoryNameList) {
+//                    System.out.println(string);
+//                }
+                switch (cbChoice.getSelectedItem().toString()) {
+                    case "BookName":
+                        setDictionary(BookNameList);
+                        break;
+                    case "AuthorName":
+                        setDictionary(AuthorNameList);
+                        break;
+                    case "PublisherName":
+                        setDictionary(PublisherNameList);
+                        break;
+                    case "CategoryName":
+                        setDictionary(CategoryNameList);
+                        break;
+                    default:
+                        break;
                 }
-                AuthorNameList = con.loadBookName("select AuthorName from author","AuthorName");
-                for (String string : AuthorNameList) {
-                    System.out.println(string);
-                }
-                PublisherNameList = con.loadBookName("select PublisherName from publisher","PublisherName");
-                for (String string : PublisherNameList) {
-                    System.out.println(string);
-                }
-                CategoryNameList = con.loadBookName("select CategoryName from category","CategoryName");
-                for (String string : CategoryNameList) {
-                    System.out.println(string);
-                }
-                list.load(sql0);
-                if(cbChoice.getSelectedItem().toString().equals("BookName")){
-                    setDictionary(BookNameList);
-                } else if(cbChoice.getSelectedItem().toString().equals("AuthorName")){
-                    setDictionary(AuthorNameList);
-                } else if(cbChoice.getSelectedItem().toString().equals("PublisherName")){
-                    setDictionary(PublisherNameList);
-                } else if (cbChoice.getSelectedItem().toString().equals("CategoryName")){
-                    setDictionary(CategoryNameList);
-                }
-                
-                //addToDictionary("bye");//adds a single word
-
                 return super.wordTyped(typedWord);//now call super to check for any matches against newest dictionary
             }
         };
+        
     }
 
     /**
@@ -133,27 +151,18 @@ public class SearchGUI extends javax.swing.JFrame {
 
         lbInput = new javax.swing.JLabel();
         cbChoice = new javax.swing.JComboBox<>();
-        btCancel = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbResult = new javax.swing.JTable();
         tfSearch = new javax.swing.JTextField();
         btSearch = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         setSize(new java.awt.Dimension(0, 600));
 
         lbInput.setText("Input:");
-
-        btCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/Redo-16.png"))); // NOI18N
-        btCancel.setText("Cancel");
-        btCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btCancelActionPerformed(evt);
-            }
-        });
 
         tbResult.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -163,16 +172,52 @@ public class SearchGUI extends javax.swing.JFrame {
 
             }
         ));
+        tbResult.setAutoCreateRowSorter(true);
+        tbResult.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         jScrollPane1.setViewportView(tbResult);
 
         btSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/btn_search.png"))); // NOI18N
         btSearch.setText("Search");
+        Action buttonActionSearchClient = new AbstractAction("Search",new javax.swing.ImageIcon(getClass().getResource("/icon/btn_search.png"))) {
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                int c = cbChoice.getSelectedIndex();
+                list.getList().clear();
+                dm.getDataVector().clear();
+                String sql = sqlSearch;
+                String choice = cbChoice.getSelectedItem().toString();
+                if (c >= 0) {
+                    sql = sqlSearch + " where " + choice + " like N'" + tfSearch.getText() + "%'";
+                }
+                list.load(sql);
+                for (Search s : list.getList()) {
+                    dm.addRow(s.toVector());
+                }
+                if (dm.getRowCount() == 0) {
+                    JOptionPane.showMessageDialog(null, "Not found!!");
+                }
+            }
+        };
+
+        String keySearchClient = "";
+
+        btSearch.setAction(buttonActionSearchClient);
+
+        buttonActionSearchClient.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
+
+        btSearch.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), keySearchClient);
+
+        btSearch.getActionMap().put(keySearchClient, buttonActionSearchClient);
         btSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSearchActionPerformed(evt);
             }
         });
 
+        jButton1.setBackground(new java.awt.Color(51, 102, 255));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/key.png"))); // NOI18N
         jButton1.setText("Login");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -181,9 +226,7 @@ public class SearchGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 0, 51));
-        jLabel1.setText("WELCOME TO MAQ LIBRARY");
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/ppap.gif"))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -192,38 +235,36 @@ public class SearchGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 905, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGap(127, 127, 127)
                                 .addComponent(lbInput, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 561, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbChoice, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, Short.MAX_VALUE)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cbChoice, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(29, 29, 29)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel1)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(8, 8, 8)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btCancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cbChoice)
                     .addComponent(tfSearch)
@@ -235,14 +276,9 @@ public class SearchGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_btCancelActionPerformed
-
     private void btSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSearchActionPerformed
         // TODO add your handling code here:
-        int c = this.cbChoice.getSelectedIndex() - 1;
+        int c = this.cbChoice.getSelectedIndex();
         this.list.getList().clear();
         this.dm.getDataVector().clear();
         String sql = sqlSearch;
@@ -273,12 +309,7 @@ public class SearchGUI extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(SearchGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -656,15 +687,12 @@ public class SearchGUI extends javax.swing.JFrame {
             textField.setText(tmp + "");
         }
 
-        
-
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    javax.swing.JButton btCancel;
     javax.swing.JButton btSearch;
     javax.swing.JComboBox<String> cbChoice;
     javax.swing.JButton jButton1;
-    javax.swing.JLabel jLabel1;
+    javax.swing.JLabel jLabel2;
     javax.swing.JScrollPane jScrollPane1;
     javax.swing.JLabel lbInput;
     javax.swing.JTable tbResult;

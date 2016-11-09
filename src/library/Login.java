@@ -9,6 +9,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import data.DataAccess;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Random;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import object.Search;
 //import library.SearchGUI;
 
@@ -26,6 +36,21 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         super("Log in");
         initComponents();
+        lblCapcha.setText(getRandomString());
+    }
+
+    public static String getRandomString() {
+
+        String ketqua = "";
+        String hoa = "QWERTYUIOPASDFGHJKLZXCVBNM";
+        String thuong = hoa.toLowerCase();
+        String so = "1234567890";
+        String randomchuoi = hoa + so + thuong;
+        for (int i = 0; i < 5; i++) {
+            int temp = (int) Math.round(Math.random() * randomchuoi.length());
+            ketqua += randomchuoi.charAt(temp);
+        }
+        return ketqua;
     }
 
     /**
@@ -37,22 +62,64 @@ public class Login extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lbUsername = new javax.swing.JLabel();
+        lbUsername1 = new javax.swing.JLabel();
         tfUsername = new javax.swing.JTextField();
         lbPassword = new javax.swing.JLabel();
         jpPassword = new javax.swing.JPasswordField();
         btLogin = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        lblCapcha = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        lbUsername.setText("Username: ");
+        lbUsername1.setText("Username: ");
 
         lbPassword.setText("Password: ");
 
         btLogin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/key.png"))); // NOI18N
         btLogin.setText("Log in");
+        Action buttonActionSearchClient = new AbstractAction("Login",new javax.swing.ImageIcon(getClass().getResource("/icon/key.png"))) {
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    // TODO add your handling code here:
+                    ResultSet rs = data.getData("Select * from admin "
+                        + "where UserName='" + tfUsername.getText() + "'");
+                    if (!tfUsername.equals("")) {
+                        if (rs.next()) {
+                            String userNameDB = rs.getString("UserName");
+                            String passwordDB = rs.getString("Pass");
+                            if (userNameDB.equals(tfUsername.getText()) &&  jTextField1.getText().equalsIgnoreCase(lblCapcha.getText())  && passwordDB.equals(new String(jpPassword.getPassword()))) {
+                                //                        JOptionPane.showMessageDialog(this, "Login successfully");
+                                new library.Form_Library().setVisible(true);
+                                dispose();
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Login not successfully");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Login not successfully");
+                        }
+                    }
+                } catch (SQLException ex) {
+                    System.out.println("Error: " + ex.getMessage());;
+                }
+            }
+        };
+
+        String keySearchClient = "";
+
+        btLogin.setAction(buttonActionSearchClient);
+
+        buttonActionSearchClient.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
+
+        btLogin.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), keySearchClient);
+
+        btLogin.getActionMap().put(keySearchClient, buttonActionSearchClient);
         btLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btLoginActionPerformed(evt);
@@ -67,39 +134,63 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/gtk-refresh.png"))); // NOI18N
+        jLabel1.setText("  ");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
+
+        lblCapcha.setFont(new java.awt.Font("iCiel Brush Up", 1, 24)); // NOI18N
+        lblCapcha.setForeground(new java.awt.Color(255, 0, 0));
+        lblCapcha.setText("            ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(65, Short.MAX_VALUE)
-                .addComponent(btLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(72, 72, 72))
             .addGroup(layout.createSequentialGroup()
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbUsername)
+                    .addComponent(lbUsername1)
                     .addComponent(lbPassword))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(tfUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
                     .addComponent(jpPassword))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(57, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblCapcha, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbUsername)
+                    .addComponent(lbUsername1)
                     .addComponent(tfUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbPassword)
                     .addComponent(jpPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCapcha)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btCancel)
                     .addComponent(btLogin))
@@ -118,9 +209,9 @@ public class Login extends javax.swing.JFrame {
                 if (rs.next()) {
                     String userNameDB = rs.getString("UserName");
                     String passwordDB = rs.getString("Pass");
-                    if (userNameDB.equals(tfUsername.getText()) && passwordDB.equals(new String(jpPassword.getPassword()))) {
+                    if (userNameDB.equals(tfUsername.getText()) &&  jTextField1.getText().equalsIgnoreCase(lblCapcha.getText())  && passwordDB.equals(new String(jpPassword.getPassword()))) {
 //                        JOptionPane.showMessageDialog(this, "Login successfully");
-                        new library.Library_Form().setVisible(true);
+                        new library.Form_Library().setVisible(true);
                         this.dispose();
                     } else {
                         JOptionPane.showMessageDialog(this, "Login not successfully");
@@ -139,6 +230,15 @@ public class Login extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btCancelActionPerformed
 
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+
+        lblCapcha.setText(getRandomString());
+        float hue = (float) Math.random();
+        int rgb = Color.HSBtoRGB(hue, 0.5f, 0.5f);
+        Color color = new Color(rgb);
+        lblCapcha.setForeground(color);
+    }//GEN-LAST:event_jLabel1MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -149,12 +249,7 @@ public class Login extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -177,9 +272,12 @@ public class Login extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancel;
     private javax.swing.JButton btLogin;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JPasswordField jpPassword;
     private javax.swing.JLabel lbPassword;
-    private javax.swing.JLabel lbUsername;
+    private javax.swing.JLabel lbUsername1;
+    private javax.swing.JLabel lblCapcha;
     private javax.swing.JTextField tfUsername;
     // End of variables declaration//GEN-END:variables
 }

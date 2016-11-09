@@ -22,6 +22,7 @@ public class ReturnManagement {
 
     private String BorrowID;
     private String BookID;
+    private String ReaderName;
     private String BookName;
     private String AuthorName;
     private String PublisherName;
@@ -33,9 +34,10 @@ public class ReturnManagement {
     static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     static Date today = new Date();
 
-    public ReturnManagement(String BorrowID, String BookID, String BookName, String AuthorName, String PublisherName, int Price, Date BorrowDate, Date ReturnDate) {
+    public ReturnManagement(String BorrowID, String BookID, String ReaderName,String BookName, String AuthorName, String PublisherName, int Price, Date BorrowDate, Date ReturnDate) {
         this.BorrowID = BorrowID;
         this.BookID = BookID;
+        this.ReaderName = ReaderName;
         this.BookName = BookName;
         this.AuthorName = AuthorName;
         this.PublisherName = PublisherName;
@@ -159,11 +161,22 @@ public class ReturnManagement {
     public void setPenalty(long Penalty) {
         this.Penalty = Penalty;
     }
+
+    public String getReaderName() {
+        return ReaderName;
+    }
+
+    public void setReaderName(String ReaderName) {
+        this.ReaderName = ReaderName;
+    }
+    
+    
     public Vector toVector() {
         DateFormat d = new SimpleDateFormat("yyyy-MM-dd");
         Vector v = new Vector();
         v.addElement(this.BorrowID);
         v.addElement(this.BookID);
+        v.addElement(this.ReaderName);
         v.addElement(this.BookName);
         v.addElement(this.AuthorName);
         v.addElement(this.PublisherName);
