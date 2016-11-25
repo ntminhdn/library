@@ -30,12 +30,16 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import data.SearchList;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Action;
 import javax.swing.UIManager;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import library.AdminLogin;
 import static library.Form_Library.resizeColumnWidth;
 import library.Login;
+import object.Gmail;
 import object.Search;
 
 /**
@@ -64,6 +68,7 @@ public class SearchGUI extends javax.swing.JFrame {
     public SearchGUI() {
         super("Find Book");
         initComponents();
+        setLocationRelativeTo(null);
         this.tbResult.setModel(dm);
         dm.setColumnIdentifiers(tenCot);
 //        this.cbChoice.addItem("--Choices--");
@@ -137,7 +142,7 @@ public class SearchGUI extends javax.swing.JFrame {
                 return super.wordTyped(typedWord);//now call super to check for any matches against newest dictionary
             }
         };
-        
+
     }
 
     /**
@@ -157,6 +162,7 @@ public class SearchGUI extends javax.swing.JFrame {
         btSearch = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -218,7 +224,7 @@ public class SearchGUI extends javax.swing.JFrame {
 
         jButton1.setBackground(new java.awt.Color(51, 102, 255));
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/key.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/home.png"))); // NOI18N
         jButton1.setText("Login");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -228,6 +234,16 @@ public class SearchGUI extends javax.swing.JFrame {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/ppap.gif"))); // NOI18N
 
+        jButton2.setBackground(new java.awt.Color(255, 51, 51));
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/key.png"))); // NOI18N
+        jButton2.setText("Manage Admins");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -236,13 +252,10 @@ public class SearchGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 905, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(127, 127, 127)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 645, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(119, 119, 119)
                                 .addComponent(lbInput, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -251,7 +264,12 @@ public class SearchGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(29, 29, 29)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 905, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -263,12 +281,12 @@ public class SearchGUI extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(8, 8, 8)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cbChoice)
                     .addComponent(tfSearch)
-                    .addComponent(lbInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lbInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 495, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -299,9 +317,34 @@ public class SearchGUI extends javax.swing.JFrame {
         new Login().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        String a = "maqlibrary@gmail.com";
+        String b = "minhanh8";
+        String c = "ntminhdn@gmail.com";
+        String x = "[MAQ Library] Serial for Login";
+        String y = "28T9CT9SXWZL1ML3248HG234GH782";
+//        String 
+        Gmail.sendFromGMail(a, b, c, x, y);
+        new AdminLogin().setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    public static String getRandomString() {
+
+        String ketqua = "";
+        String hoa = "QWERTYUIOPASDFGHJKLZXCVBNM";
+//        String thuong = hoa.toLowerCase();
+        String so = "1234567890";
+        String randomchuoi = hoa + so;
+        for (int i = 0; i < 15; i++) {
+            int temp = (int) Math.round(Math.random() * randomchuoi.length());
+            ketqua += randomchuoi.charAt(temp);
+        }
+        return ketqua;
+    }
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -354,7 +397,13 @@ public class SearchGUI extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(SearchGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 new SearchGUI().setVisible(true);
             }
         });
@@ -692,6 +741,7 @@ public class SearchGUI extends javax.swing.JFrame {
     javax.swing.JButton btSearch;
     javax.swing.JComboBox<String> cbChoice;
     javax.swing.JButton jButton1;
+    javax.swing.JButton jButton2;
     javax.swing.JLabel jLabel2;
     javax.swing.JScrollPane jScrollPane1;
     javax.swing.JLabel lbInput;

@@ -36,6 +36,7 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         super("Log in");
         initComponents();
+        setLocationRelativeTo(null);
         lblCapcha.setText(getRandomString());
     }
 
@@ -72,7 +73,7 @@ public class Login extends javax.swing.JFrame {
         lblCapcha = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         lbUsername1.setText("Username: ");
@@ -89,21 +90,17 @@ public class Login extends javax.swing.JFrame {
                     // TODO add your handling code here:
                     ResultSet rs = data.getData("Select * from admin "
                         + "where UserName='" + tfUsername.getText() + "'");
-                    if (!tfUsername.equals("")) {
-                        if (rs.next()) {
-                            String userNameDB = rs.getString("UserName");
-                            String passwordDB = rs.getString("Pass");
-                            if (userNameDB.equals(tfUsername.getText()) &&  jTextField1.getText().equalsIgnoreCase(lblCapcha.getText())  && passwordDB.equals(new String(jpPassword.getPassword()))) {
-                                //                        JOptionPane.showMessageDialog(this, "Login successfully");
-                                new library.Form_Library().setVisible(true);
-                                dispose();
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Login not successfully");
-                            }
+
+                    if (rs.next()) {
+                        String userNameDB = rs.getString("UserName");
+                        String passwordDB = rs.getString("Pass");
+                        if (userNameDB.equals(tfUsername.getText()) && jTextField1.getText().equalsIgnoreCase(lblCapcha.getText()) && passwordDB.equals(new String(jpPassword.getPassword()))) {
+                            new Form_Library().setVisible(true);
                         } else {
                             JOptionPane.showMessageDialog(null, "Login not successfully");
                         }
                     }
+
                 } catch (SQLException ex) {
                     System.out.println("Error: " + ex.getMessage());;
                 }
@@ -201,28 +198,24 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLoginActionPerformed
-        try {
-            // TODO add your handling code here:
-            ResultSet rs = data.getData("Select * from admin "
-                    + "where UserName='" + tfUsername.getText() + "'");
-            if (!tfUsername.equals("")) {
-                if (rs.next()) {
-                    String userNameDB = rs.getString("UserName");
-                    String passwordDB = rs.getString("Pass");
-                    if (userNameDB.equals(tfUsername.getText()) &&  jTextField1.getText().equalsIgnoreCase(lblCapcha.getText())  && passwordDB.equals(new String(jpPassword.getPassword()))) {
-//                        JOptionPane.showMessageDialog(this, "Login successfully");
-                        new library.Form_Library().setVisible(true);
-                        this.dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Login not successfully");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Login not successfully");
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println("Error: " + ex.getMessage());;
-        }
+//        try {
+//            // TODO add your handling code here:
+//            ResultSet rs = data.getData("Select * from admin "
+//                    + "where UserName='" + tfUsername.getText() + "'");
+//
+//            if (rs.next()) {
+//                String userNameDB = rs.getString("UserName");
+//                String passwordDB = rs.getString("Pass");
+//                if (userNameDB.equals(tfUsername.getText()) && jTextField1.getText().equalsIgnoreCase(lblCapcha.getText()) && passwordDB.equals(new String(jpPassword.getPassword()))) {
+//                    new Form_Library().setVisible(true);
+//                } else {
+//                    JOptionPane.showMessageDialog(null, "Login not successfully");
+//                }
+//            }
+//
+//        } catch (SQLException ex) {
+//            System.out.println("Error: " + ex.getMessage());;
+//        }
     }//GEN-LAST:event_btLoginActionPerformed
 
     private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed

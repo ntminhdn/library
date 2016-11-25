@@ -80,6 +80,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -120,7 +121,19 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.jdbc.JDBCCategoryDataset;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
+import static javafx.application.Platform.exit;
+import javax.imageio.ImageIO;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.swing.Icon;
+
 /**
  *
  * @author PhiLong
@@ -213,7 +226,11 @@ public class Form_Library extends javax.swing.JFrame {
     DefaultTableModel dmReturn = new DefaultTableModel() {
         @Override
         public boolean isCellEditable(int row, int col) {
-            return false;
+            if (col == 11) {
+                return true;
+            } else {
+                return false;
+            }
         }
     };
 
@@ -246,12 +263,13 @@ public class Form_Library extends javax.swing.JFrame {
         "ID", "Name", "Address", "Phone"
     };
     private String[] tenCotReturn = {
-        "Borrow ID", "Book ID", "Reader Name", "Book Name", "Author Name", "Publisher Name", "Price", "Borrow Date", "Return Date", "Overdue Days", "Penalty"
+        "Borrow ID", "Book ID", "Reader Name", "Book Name", "Author Name", "Publisher Name", "Price", "Borrow Date", "Return Date", "Overdue Days", "Penalty", "Delete"
     };
 
     public Form_Library() {
         super("Library Management");
         initComponents();
+        setLocationRelativeTo(null);
         setSize(1100, 700);
         jPanel1.setSize(900, 600);
         jPanel2.setSize(900, 600);
@@ -310,19 +328,20 @@ public class Form_Library extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e);
         }
-        ResultSet rs = null;
-        rs = da.getData(sql);
-        List l;
-        l = DbUtils.resultSetToNestedList(rs);
-        this.taBaoCao.append(this.lbTongSach.getText() + "\n");
-        this.taBaoCao.append(this.lbTongKhach.getText() + "\n");
-        this.taBaoCao.append(this.lbTongPhieu.getText() + "\n");
-        this.taBaoCao.append(this.lbTongKhachMuon.getText() + "\n");
-        this.taBaoCao.append(this.lbTongPhieuQuaHan.getText() + "\n\n");
-        this.taBaoCao.append("|  BorrowID  |  RdID  |  BookID  |  BorrowDate  |  ReturnDate  |\n");
-        for (int i = 0; i < l.size(); i++) {
-            this.taBaoCao.append(l.get(i).toString() + "\n");
-        }
+        taBaoCao.setText("");
+//        ResultSet rs = null;
+//        rs = da.getData(sql);
+//        List l;
+//        l = DbUtils.resultSetToNestedList(rs);
+//        this.taBaoCao.append(this.lbTongSach.getText() + "\n");
+//        this.taBaoCao.append(this.lbTongKhach.getText() + "\n");
+//        this.taBaoCao.append(this.lbTongPhieu.getText() + "\n");
+//        this.taBaoCao.append(this.lbTongKhachMuon.getText() + "\n");
+//        this.taBaoCao.append(this.lbTongPhieuQuaHan.getText() + "\n\n");
+//        this.taBaoCao.append("|  BorrowID  |  RdID  |  BookID  |  BorrowDate  |  ReturnDate  |\n");
+//        for (int i = 0; i < l.size(); i++) {
+//            this.taBaoCao.append(l.get(i).toString() + "\n");
+//        }
 
         //Reader
         this.tbReader.setModel(dmReader);
@@ -366,6 +385,41 @@ public class Form_Library extends javax.swing.JFrame {
                 dmReader.insertRow(donghh, vt);
             }
         });
+
+        //Return
+        this.tbReturn.setModel(dmReturn);
+        dmReturn.setColumnIdentifiers(tenCotReturn);
+
+//        "Borrow ID", "Book ID", "Reader Name", "Book Name", "Author Name", "Publisher Name", "Price", "Borrow Date", "Return Date", "Overdue Days", "Penalty", "Delete"
+        //Xóa phiếu mượn
+        tbReturn.getColumn("Delete").setCellRenderer(new ButtonRenderer());
+        ButtonEditor beDel = new ButtonEditor(new JCheckBox());
+        tbReturn.getColumn("Delete").setCellEditor(beDel);
+        beDel.button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    int donghh = tbReturn.getSelectedRow();
+                    String borID = tbReturn.getValueAt(donghh, 0).toString();
+                    System.out.println(borID);
+                    int xoaPhieu = ReturnList.xoa(borID);
+                    dmReturn.removeRow(xoaPhieu);
+                } catch (Exception ex) {
+                    Logger.getLogger(Form_Library.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        });
+        ReturnList.load("select borrowingmanagement.BorrowID, borrowingmanagement.BookID, reader.RdName,book.BookName, author.AuthorName, publisher.PublisherName, book.Price, borrowingmanagement.BorrowDate, borrowingmanagement.ReturnDate\n"
+                + "from borrowingmanagement\n"
+                + "inner join book on borrowingmanagement.BookID = book.BookID\n"
+                + "inner join author on book.AuthorID = author.AuthorID\n"
+                + "inner join reader on borrowingmanagement.RdID = reader.RdID\n"
+                + "inner join publisher on book.PublisherID = publisher.PublisherID\n");
+        for (ReturnManagement c : ReturnList.getReturnList()) {
+            dmReturn.addRow(c.toVector());
+        }
 
         //Gia hạn mượn sách
         tbBorrowingManagement.getColumn("Add 10 Days").setCellRenderer(new ButtonRenderer());
@@ -456,19 +510,6 @@ public class Form_Library extends javax.swing.JFrame {
         SupplierList.load("Select * from supplier");
         for (Supplier c : SupplierList.getSupplierList()) {
             dmSupplier.addRow(c.toVector());
-        }
-
-        //Return
-        this.tbReturn.setModel(dmReturn);
-        dmReturn.setColumnIdentifiers(tenCotReturn);
-        ReturnList.load("select borrowingmanagement.BorrowID, borrowingmanagement.BookID, reader.RdName,book.BookName, author.AuthorName, publisher.PublisherName, book.Price, borrowingmanagement.BorrowDate, borrowingmanagement.ReturnDate\n"
-                + "from borrowingmanagement\n"
-                + "inner join book on borrowingmanagement.BookID = book.BookID\n"
-                + "inner join author on book.AuthorID = author.AuthorID\n"
-                + "inner join reader on borrowingmanagement.RdID = reader.RdID\n"
-                + "inner join publisher on book.PublisherID = publisher.PublisherID\n");
-        for (ReturnManagement c : ReturnList.getReturnList()) {
-            dmReturn.addRow(c.toVector());
         }
 
         //Co dãn các cột
@@ -573,6 +614,8 @@ public class Form_Library extends javax.swing.JFrame {
         jMenuItemReader.setName("jMenuItem"); // NOI18N
         jPopupMenuReader.add(jMenuItemReader);
 
+        jLabel20.setIcon(loadImage("src\\icon\\BG.jpg", 1070, 558));
+
         setCarlendarBorrow();
         setCarlendarReader();
     }
@@ -637,6 +680,7 @@ public class Form_Library extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         btSave = new javax.swing.JButton();
+        jButton133 = new javax.swing.JButton();
         jPanel9 = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         tfcategoryid = new javax.swing.JTextField();
@@ -1069,6 +1113,36 @@ public class Form_Library extends javax.swing.JFrame {
             }
         });
 
+        jButton133.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/gtk-refresh.png"))); // NOI18N
+        Action buttonActionBook = new AbstractAction("",new javax.swing.ImageIcon(getClass().getResource("/icon/gtk-refresh.png"))) {
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                BookList.getList().clear();
+                dmBook.getDataVector().clear();
+                BookList.load("select * from book");
+                for (Book c : BookList.getList()) {
+                    dmBook.addRow(c.toVector());
+                }
+            }
+        };
+
+        String keyBook = "";
+
+        jButton133.setAction(buttonActionBook);
+
+        buttonActionBook.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
+
+        jButton133.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), keyBook);
+
+        jButton133.getActionMap().put(keyBook, buttonActionBook);
+        jButton133.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton133ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
@@ -1138,11 +1212,12 @@ public class Form_Library extends javax.swing.JFrame {
                                             .addComponent(tfShelf)
                                             .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel11Layout.createSequentialGroup()
-                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btImage)
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
                                         .addGap(4, 4, 4)
-                                        .addComponent(lbColumnNo, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(lbColumnNo, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jButton133, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(47, 47, 47)
                                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(tfColumnNo, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1160,6 +1235,9 @@ public class Form_Library extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addComponent(lbImage, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33))
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(tfBookID)
@@ -1198,7 +1276,10 @@ public class Form_Library extends javax.swing.JFrame {
                             .addComponent(tfImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton133)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel11Layout.createSequentialGroup()
@@ -1209,17 +1290,13 @@ public class Form_Library extends javax.swing.JFrame {
                                         .addComponent(btDelete1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(btSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfSearchBook, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(38, 38, 38))
+                                .addComponent(tfSearchBook, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel11Layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
                                 .addComponent(btClose, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btSearchBook)
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addComponent(lbImage, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)))
+                                .addComponent(btSearchBook)))
+                        .addGap(79, 79, 79)))
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(116, 116, 116))
         );
@@ -1447,16 +1524,6 @@ public class Form_Library extends javax.swing.JFrame {
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addComponent(jPanel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(39, 39, 39)
-                        .addComponent(btClose1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(137, 137, 137))
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap(354, Short.MAX_VALUE))
-            .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addComponent(lbAuthorID1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1466,6 +1533,17 @@ public class Form_Library extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(tfAuthorName, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(57, 57, 57))
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jScrollPane4)
+                        .addContainerGap())
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jPanel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(39, 39, 39)
+                        .addComponent(btClose1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(491, Short.MAX_VALUE))))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2907,12 +2985,13 @@ public class Form_Library extends javax.swing.JFrame {
 
     private void btEditSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEditSupplierActionPerformed
         // TODO add your handling code here:
-        String supplierID = tfSupplierID.getText();
+        String supplierID = tfSupplierID1.getText();
         String supplierName = tfSupplierName.getText();
         String s_Address = tfAddressSuplier.getText();
         String s_Phone = ftfPhoneSupplier.getText();
         if (checkPhone(s_Phone)) {
             Supplier b = new Supplier(supplierID, supplierName, s_Address, s_Phone);
+            System.out.println(supplierID);
             Vector vt = b.toVector();
             int donghh = this.tbSupplierAdmin.getSelectedRow();
             SupplierList.update(donghh, b);
@@ -2934,7 +3013,7 @@ public class Form_Library extends javax.swing.JFrame {
         // TODO add your handling code here:
         int donghh = this.tbSupplierAdmin.getSelectedRow();
         Supplier b = SupplierList.getSupplier(donghh);
-        this.viewSupplier(b);
+        this.viewSupplier1(b);
         jMenuItemSup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -3100,6 +3179,7 @@ public class Form_Library extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
         dispose();
         new Login().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -3109,7 +3189,8 @@ public class Form_Library extends javax.swing.JFrame {
         try {
             JFileChooser jfc = new JFileChooser("Save File");
             if (jfc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                String content = this.taBaoCao.getText();
+
+                String content = "\t\t\t\t\tStatistics\n\n\n" +this.lbTongSach.getText() + "\n" + this.lbTongKhach.getText() + "\n" + this.lbTongPhieu.getText() + "\n" + this.lbTongKhachMuon.getText() + "\n" + this.lbTongPhieuQuaHan.getText() + "\n\n";
                 jfc.setDialogTitle("Save File");
                 FileOutputStream fos = new FileOutputStream(jfc.getSelectedFile());
                 fos.write(content.getBytes());
@@ -3163,84 +3244,24 @@ public class Form_Library extends javax.swing.JFrame {
 
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        SendingEmail se = new SendingEmail();
-        se.setVisible(true);
-        class MyTask extends SwingWorker<Void, Void> {
-
-            /**
-             * Main task. Executed in background thread.
-             */
-            @Override
-            public Void doInBackground() {
-                Random random = new Random();
-                int progress = 0;
-                // Initialize progress property.
-                setProgress(0);
-                while (progress < 100) {
-                    // Sleep for up to one second.
-                    try {
-                        Thread.sleep(random.nextInt(400));
-                    } catch (InterruptedException ignore) {
-                    }
-                    // Make random progress.
-                    progress += random.nextInt(10);
-                    setProgress(Math.min(progress, 100));
+        taBaoCao.setText("");
+        for (BorrowingManagement r : BorrowingList.getList()) {
+            dmBorrowing.addRow(r.toVector());
+            if (truNgayThang(r.getReturnDate()) < 4) {
+                String a = "maqlibrary@gmail.com";
+                String b = "minhanh8";
+                String x = "[MAQ Library] Thông báo nhắc nhở thời gian trả sách";
+                String y = null;
+                try {
+                    y = "Kính gửi " + r.getRdName(r.getBorrowID()) + "\n\nChúng tôi rất hân hạnh khi được phục vụ quý độc giả. Qua email này, chúng tôi muốn nhắc nhở đến quý độc giả về thời hạn mượn sách chỉ còn " + truNgayThang(r.getReturnDate()) + " ngày. Kính mong quý độc giả thu xếp thời gian để trả sách.\n\nXin chân thành cảm ơn.\n\nEmail này được gửi tự động, quý độc giả vui lòng không trả lời lại email này. Mọi thắc mắc xin liên hệ số Hotline: 19001009.";
+                } catch (Exception ex) {
+                    Logger.getLogger(Form_Library.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                return null;
+                String to = r.getRdEmail(r.getBorrowID());
+                sendFromGMail(a, b, to, x, y);
             }
-
-            /**
-             * Executed in event dispatching thread
-             */
-            @Override
-            public void done() {
-                Toolkit.getDefaultToolkit().beep();
-                se.getStartButton().setEnabled(true);
-                setCursor(null); // turn off the wait cursor
-                se.getTaskOutput().append("Done!\n");
-            }
-
         }
-        MyTask task = new MyTask();
-        se.getStartButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                se.getStartButton().setEnabled(false);
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                // Instances of javax.swing.SwingWorker are not reusuable, so
-                // we create new instances as needed.
-
-                for (BorrowingManagement r : BorrowingList.getList()) {
-                    dmBorrowing.addRow(r.toVector());
-                    if (truNgayThang(r.getReturnDate()) < 4) {
-                        String a = "maqlibrary@gmail.com";
-                        String b = "minhanh8";
-                        String x = "[MAQ Library] Thông báo nhắc nhở thời gian trả sách";
-                        String y = null;
-                        try {
-                            y = "Kính gửi " + r.getRdName(r.getBorrowID()) + "\n\nChúng tôi rất hân hạnh khi được phục vụ quý độc giả. Qua email này, chúng tôi muốn nhắc nhở đến quý độc giả về thời hạn mượn sách chỉ còn " + truNgayThang(r.getReturnDate()) + " ngày. Kính mong quý độc giả thu xếp thời gian để trả sách.\n\nXin chân thành cảm ơn.\n\nEmail này được gửi tự động, quý độc giả vui lòng không trả lời lại email này. Mọi thắc mắc xin liên hệ số Hotline: 19001009.";
-                            se.getTaskOutput().append("Sent to " + r.getRdName(r.getBorrowID()) + ": " + r.getRdEmail(r.getBorrowID()) + "\n");
-                        } catch (Exception ex) {
-                            Logger.getLogger(Form_Library.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        String to = r.getRdEmail(r.getBorrowID());
-                        Gmail.sendFromGMail(a, b, to, x, y);
-                        task.addPropertyChangeListener(new PropertyChangeListener() {
-                            @Override
-                            public void propertyChange(PropertyChangeEvent evt) {
-                                if ("progress" == (evt.getPropertyName())) {
-                                    int progress = (Integer) evt.getNewValue();
-                                    se.getProgressBar().setValue(progress);
-
-                                }
-                            }
-                        });
-                    }
-                }
-
-                task.execute();
-            }
-        });
+        JOptionPane.showMessageDialog(null, "Done!");
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -3447,19 +3468,19 @@ public class Form_Library extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        jTabbedPane1.setTitleAt(0, "Quản Lí Sách");
-        jTabbedPane1.setTitleAt(1, "Quản Lí Bạn Đọc");
-        jTabbedPane1.setTitleAt(2, "Quản Lí Mượn Và Trả");
-        jTabbedPane1.setTitleAt(3, "Quản Lí Nhà Cung Cấp");
-        jTabbedPane1.setTitleAt(4, "Thống Kê");
-        jTabbedPane1.setTitleAt(5, "Trang Chủ");
+        jTabbedPane1.setTitleAt(0, "Trang Chủ");
+        jTabbedPane1.setTitleAt(1, "Quản Lí Sách");
+        jTabbedPane1.setTitleAt(2, "Quản Lí Bạn Đọc");
+        jTabbedPane1.setTitleAt(3, "Quản Lí Mượn Và Trả");
+        jTabbedPane1.setTitleAt(4, "Quản Lí Nhà Cung Cấp");
+        jTabbedPane1.setTitleAt(5, "Thống Kê");
         jTabbedPane2.setTitleAt(0, "Sách");
         jTabbedPane2.setTitleAt(1, "Thể Loại");
         jTabbedPane2.setTitleAt(2, "Tác Giả");
         jTabbedPane2.setTitleAt(0, "Nhà Xuất Bản");
         jTabbedPane3.setTitleAt(0, "Đang Mượn");
         jTabbedPane3.setTitleAt(1, "Đã Trả");
-        Locale i = new Locale("vi","VN");
+        Locale i = new Locale("vi", "VN");
         ResourceBundle r = ResourceBundle.getBundle("resources/Bundle", i);
         jButton1.setText(r.getString("Form_Library.jButton1.text"));
         this.jButton2.setText(r.getString("Form_Library.jButton2.text"));
@@ -3502,7 +3523,7 @@ public class Form_Library extends javax.swing.JFrame {
         this.btClose2.setText(r.getString("Form_Library.btClose2.text"));
         this.jLabel6.setText(r.getString("Form_Library.jLabel6.text"));
         this.btDeletePublisher.setText(r.getString("Form_Library.btDeletePublisher.text"));
-        
+
         this.jLabel7.setText(r.getString("Form_Library.jLabel7.text"));
         this.jLabel8.setText(r.getString("Form_Library.jLabel8.text"));
         this.jLabel9.setText(r.getString("Form_Library.jLabel9.text"));
@@ -3542,22 +3563,25 @@ public class Form_Library extends javax.swing.JFrame {
         this.btPrintStas.setText(r.getString("Form_Library.btPrintStas.text"));
         this.jButton7.setText(r.getString("Form_Library.jButton7.text"));
         this.jButton6.setText(r.getString("Form_Library.jButton6.text"));
+        this.jButton11.setText(r.getString("Form_Library.jButton11.text"));
+        this.jButton10.setText(r.getString("Form_Library.jButton10.text"));
+        this.jButton12.setText(r.getString("Form_Library.jButton12.text"));
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        jTabbedPane1.setTitleAt(0, "Book Management");
-        jTabbedPane1.setTitleAt(1, "Reader Management");
-        jTabbedPane1.setTitleAt(2, "Borrowing&Return Management");
-        jTabbedPane1.setTitleAt(3, "Supplier Management");
-        jTabbedPane1.setTitleAt(4, "Statistic");
-        jTabbedPane1.setTitleAt(5, "Home");
+        jTabbedPane1.setTitleAt(0, "Home");
+        jTabbedPane1.setTitleAt(1, "Book Management");
+        jTabbedPane1.setTitleAt(2, "Reader Management");
+        jTabbedPane1.setTitleAt(3, "Borrowing&Return Management");
+        jTabbedPane1.setTitleAt(4, "Supplier Management");
+        jTabbedPane1.setTitleAt(5, "Statistic");
         jTabbedPane2.setTitleAt(0, "Book");
         jTabbedPane2.setTitleAt(1, "Category");
         jTabbedPane2.setTitleAt(2, "Author");
         jTabbedPane2.setTitleAt(0, "Publisher");
         jTabbedPane3.setTitleAt(0, "Borrowing");
         jTabbedPane3.setTitleAt(1, "Return");
-        Locale i = new Locale("en","US");
+        Locale i = new Locale("en", "US");
         ResourceBundle r = ResourceBundle.getBundle("resources/Bundle", i);
         jButton1.setText(r.getString("Form_Library.jButton1.text"));
         this.jButton2.setText(r.getString("Form_Library.jButton2.text"));
@@ -3600,7 +3624,7 @@ public class Form_Library extends javax.swing.JFrame {
         this.btClose2.setText(r.getString("Form_Library.btClose2.text"));
         this.jLabel6.setText(r.getString("Form_Library.jLabel6.text"));
         this.btDeletePublisher.setText(r.getString("Form_Library.btDeletePublisher.text"));
-        
+
         this.jLabel7.setText(r.getString("Form_Library.jLabel7.text"));
         this.jLabel8.setText(r.getString("Form_Library.jLabel8.text"));
         this.jLabel9.setText(r.getString("Form_Library.jLabel9.text"));
@@ -3640,10 +3664,13 @@ public class Form_Library extends javax.swing.JFrame {
         this.btPrintStas.setText(r.getString("Form_Library.btPrintStas.text"));
         this.jButton7.setText(r.getString("Form_Library.jButton7.text"));
         this.jButton6.setText(r.getString("Form_Library.jButton6.text"));
+        this.jButton11.setText(r.getString("Form_Library.jButton11.text"));
+        this.jButton10.setText(r.getString("Form_Library.jButton10.text"));
+        this.jButton12.setText(r.getString("Form_Library.jButton12.text"));
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-         jTabbedPane1.setTitleAt(0, "管理洋書");
+        jTabbedPane1.setTitleAt(0, "管理洋書");
         jTabbedPane1.setTitleAt(1, "リダの管理");
         jTabbedPane1.setTitleAt(2, "借りを返し管理");
         jTabbedPane1.setTitleAt(3, "サプライヤ管理");
@@ -3655,7 +3682,7 @@ public class Form_Library extends javax.swing.JFrame {
         jTabbedPane2.setTitleAt(0, "出版社");
         jTabbedPane3.setTitleAt(0, "借り入れ");
         jTabbedPane3.setTitleAt(1, "復帰");
-        Locale l = new Locale("ja","JP");
+        Locale l = new Locale("ja", "JP");
         ResourceBundle r = ResourceBundle.getBundle("resources/Bundle", l);
         jButton1.setText(r.getString("Form_Library.jButton1.text"));
         this.jButton2.setText(r.getString("Form_Library.jButton2.text"));
@@ -3698,7 +3725,7 @@ public class Form_Library extends javax.swing.JFrame {
         this.btClose2.setText(r.getString("Form_Library.btClose2.text"));
         this.jLabel6.setText(r.getString("Form_Library.jLabel6.text"));
         this.btDeletePublisher.setText(r.getString("Form_Library.btDeletePublisher.text"));
-        
+
         this.jLabel7.setText(r.getString("Form_Library.jLabel7.text"));
         this.jLabel8.setText(r.getString("Form_Library.jLabel8.text"));
         this.jLabel9.setText(r.getString("Form_Library.jLabel9.text"));
@@ -3738,8 +3765,20 @@ public class Form_Library extends javax.swing.JFrame {
         this.btPrintStas.setText(r.getString("Form_Library.btPrintStas.text"));
         this.jButton7.setText(r.getString("Form_Library.jButton7.text"));
         this.jButton6.setText(r.getString("Form_Library.jButton6.text"));
+        this.jButton11.setText(r.getString("Form_Library.jButton11.text"));
+        this.jButton10.setText(r.getString("Form_Library.jButton10.text"));
+        this.jButton12.setText(r.getString("Form_Library.jButton12.text"));
     }//GEN-LAST:event_jButton12ActionPerformed
-   private void loadInternational(Locale locale) {
+
+    private void jButton133ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton133ActionPerformed
+        this.BookList.getList().clear();
+        this.dmBook.getDataVector().clear();
+        BookList.load("select * from book");
+        for (Book c : BookList.getList()) {
+            dmBook.addRow(c.toVector());
+        }
+    }//GEN-LAST:event_jButton133ActionPerformed
+    private void loadInternational(Locale locale) {
         String NAME_RESOURCES = "MessageBundle";
         ResourceBundle r = ResourceBundle.getBundle("resources/" + NAME_RESOURCES, locale);
 //        this.jButton1.setText(r.getString("jButton1"));
@@ -3840,12 +3879,9 @@ public class Form_Library extends javax.swing.JFrame {
 //        this.lb1.setText(r.getString("lb1"));
 //        this.startButton.setText(r.getString("startButton"));
 //        this.Button2.setText(r.getString("Button2"));
-        
-        
-        
-        
-        
+
     }
+
     private void viewBook(Book b) {
         this.tfBookID.setText(b.getBookID());
         this.tfBookName.setText(b.getBookName());
@@ -3869,7 +3905,7 @@ public class Form_Library extends javax.swing.JFrame {
         return false;
     }
 
-    private void viewSupplier(Supplier b) {
+    private void viewSupplier1(Supplier b) {
         this.tfSupplierID1.setText(b.getSupplierID());
         this.tfSupplierName.setText(b.getSupplierName());
         this.ftfPhoneSupplier.setText(b.getS_Phone());
@@ -3958,6 +3994,7 @@ public class Form_Library extends javax.swing.JFrame {
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton133;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -4677,6 +4714,78 @@ public class Form_Library extends javax.swing.JFrame {
             String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);
             textField.setText(tmp + "");
         }
-
     }
+
+    public static Icon loadImage(String linkImage, int k, int m) {/*linkImage là tên icon, k kích thước chiều rộng mình muốn,m chiều dài và hàm này trả về giá trị là 1 icon.*/
+        try {
+            BufferedImage image = ImageIO.read(new File(linkImage));//đọc ảnh dùng BufferedImage
+
+            int x = k;
+            int y = m;
+            int ix = image.getWidth();
+            int iy = image.getHeight();
+            int dx = 0, dy = 0;
+
+            if (x / y > ix / iy) {
+                dy = y;
+                dx = dy * ix / iy;
+            } else {
+                dx = x;
+                dy = dx * iy / ix;
+            }
+
+            return new ImageIcon(image.getScaledInstance(dx, dy,
+                    image.SCALE_SMOOTH));
+
+        } catch (IOException e) {
+//            System.out.println("Err: " + e.getMessage());
+        }
+        return null;
+    }
+
+//    public static class Gmail {
+    public void sendFromGMail(String from, String pass, String to, String subject, String body) {
+        this.taBaoCao.append("Sent to " + to + " successfully.\n");
+        Properties props = System.getProperties();
+        String host = "smtp.gmail.com";
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.user", from);
+        props.put("mail.smtp.password", pass);
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+
+        Session session = Session.getDefaultInstance(props);
+        MimeMessage message = new MimeMessage(session);
+
+        try {
+            message.setFrom(new InternetAddress(from));
+            InternetAddress toAddress = new InternetAddress();
+
+            // To get the array of addresses
+//            for( int i = 0; i < to.length; i++ ) {
+            toAddress = new InternetAddress(to);
+//            }
+
+//            for( int i = 0; i < toAddress.length; i++) {
+            message.addRecipient(Message.RecipientType.TO, toAddress);
+//            }
+
+            message.setSubject(subject);
+            message.setText(body);
+            Transport transport = session.getTransport("smtp");
+            transport.connect(host, from, pass);
+            
+            transport.sendMessage(message, message.getAllRecipients());
+            
+            System.out.print("Successfully Sent" + "\n");
+            transport.close();
+        } catch (AddressException ae) {
+            ae.printStackTrace();
+        } catch (MessagingException me) {
+            me.printStackTrace();
+        }
+    }
+
+//    }
 }

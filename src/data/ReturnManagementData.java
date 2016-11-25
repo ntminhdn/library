@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import object.BorrowingManagement;
+import object.Reader;
 import object.ReturnManagement;
 
 /**
@@ -54,6 +55,21 @@ public class ReturnManagementData {
 
     public ReturnManagement getReturnManagement(int i) {
         return returnManagementList.get(i);
+    }
+    
+    public int xoa(String BorID) throws Exception {
+        String sql = "delete from borrowingmanagement where BorrowID = '" + BorID + "'";
+//        System.out.println(sql);
+        da.updateData(sql);
+        
+        for (ReturnManagement t : returnManagementList) {
+            if (t.getBorrowID().equals(BorID)) {
+                int i = returnManagementList.indexOf(t);
+                returnManagementList.remove(t);
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

@@ -25,6 +25,7 @@ public class ChangePassword extends javax.swing.JFrame {
     public ChangePassword() {
         super("Change Password");
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**

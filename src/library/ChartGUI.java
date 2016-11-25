@@ -41,6 +41,7 @@ public class ChartGUI extends javax.swing.JFrame {
     public ChartGUI() {
         super("Chart");
         initComponents();
+        setLocationRelativeTo(null);
         this.tbSumBookBorrowed.setModel(dm);
         dm.setColumnIdentifiers(tenCot);
         da.LoadData(sql0, tbSumBookBorrowed);

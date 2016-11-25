@@ -61,7 +61,6 @@ public class SupplierData {
                 + "', S_Address ='" + b.getS_Address() + "',"
                 + " S_Phone ='" + b.getS_Phone() + "' "
                 + " where supplierID='" + b.getSupplierID() + "'";
-//        System.out.println(sql);
         da.updateDB(sql);
     }
 

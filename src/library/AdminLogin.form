@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="jLabel1"/>
+      </Properties>
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="3"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
+                              <Component id="lbPassword" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lbUsername1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="tfUsername" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jpPassword" alignment="0" pref="210" max="32767" attributes="0"/>
+                          <Component id="tfSerial" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="lblCapcha" alignment="1" min="-2" pref="99" max="-2" attributes="0"/>
+                          <Component id="btLogin" alignment="1" min="-2" pref="91" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="btCancel" alignment="0" min="-2" pref="91" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jTextField2" min="-2" pref="107" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jLabel4" min="-2" pref="28" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace pref="19" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="tfSerial" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lbUsername1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfUsername" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lbPassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jpPassword" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblCapcha" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="19" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="btCancel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btLogin" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JTextField" name="tfSerial">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="M&#x1ed9;t &#x111;o&#x1ea1;n Serial &#x111;&#xe3; &#x111;&#x1b0;&#x1ee3;c g&#x1eed;i &#x111;&#x1ebf;n email b&#x1ea1;n. Vui l&#xf2;ng d&#xe1;n m&#xe3; v&#xe0;o &#xf4; b&#xea;n d&#x1b0;&#x1edb;i"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Serial:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblCapcha">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="iCiel Brush Up" size="24" style="1"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="0" green="0" red="ff" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="            "/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lbPassword">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Password: "/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lbUsername1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Username: "/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfUsername">
+    </Component>
+    <Component class="javax.swing.JPasswordField" name="jpPassword">
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextField2">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/icon/gtk-refresh.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="  "/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabel4MouseClicked"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btLogin">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/icon/key.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Log in"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btLoginActionPerformed"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Action buttonActionSearchClient = new AbstractAction(&quot;Login&quot;,new javax.swing.ImageIcon(getClass().getResource(&quot;/icon/key.png&quot;))) {&#xa; &#xa;    @Override&#xa;    public void actionPerformed(ActionEvent evt) {&#xa;        try {&#xa;            // TODO add your handling code here:&#xa;            ResultSet rs = data.getData(&quot;Select * from admin &quot;&#xa;                    + &quot;where UserName=&apos;&quot; + tfUsername.getText() + &quot;&apos;&quot;);&#xa;            while (rs.next()) {&#xa;                String userNameDB = rs.getString(&quot;UserName&quot;);&#xa;                String passwordDB = rs.getString(&quot;Pass&quot;);&#xa;                String role = rs.getString(&quot;Role&quot;);&#xa;                if (tfSerial.getText().equals(&quot;28T9CT9SXWZL1ML3248HG234GH782&quot;) &amp;&amp; &quot;Manager&quot;.equals(role) &amp;&amp; userNameDB.equals(tfUsername.getText()) &amp;&amp; jTextField2.getText().equalsIgnoreCase(lblCapcha.getText()) &amp;&amp; passwordDB.equals(new String(jpPassword.getPassword()))) {&#xa;                    new ManageAdmin().setVisible(true);&#xa;                    dispose();&#xa;                } else {&#xa;                    JOptionPane.showMessageDialog(null, &quot;Login not successfully&quot;);&#xa;                }&#xa;            }&#xa;&#xa;        } catch (SQLException ex) {&#xa;            System.out.println(&quot;Error: &quot; + ex.getMessage());;&#xa;        }&#xa;    }&#xa;};&#xa; &#xa;String keySearchClient = &quot;&quot;;&#xa; &#xa;btLogin.setAction(buttonActionSearchClient);&#xa; &#xa;buttonActionSearchClient.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);&#xa; &#xa;btLogin.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(&#xa;        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), keySearchClient);&#xa; &#xa;btLogin.getActionMap().put(keySearchClient, buttonActionSearchClient);"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="btCancel">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/icon/Redo-16.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Cancel"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCancelActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>

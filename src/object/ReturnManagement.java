@@ -185,6 +185,7 @@ public class ReturnManagement {
         v.addElement(d.format(this.ReturnDate));
         v.addElement(this.OverdueDays);
         v.addElement(this.Penalty);
+        v.addElement("X");
         return v;
     }
     

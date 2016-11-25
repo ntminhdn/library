@@ -30,6 +30,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
+
 public class SendingEmail extends javax.swing.JFrame {
 
     /**
@@ -77,6 +78,7 @@ public class SendingEmail extends javax.swing.JFrame {
         super("Sending Email");
 
         initComponents();
+        setLocationRelativeTo(null);
         startButton.setActionCommand("start");
 //        startButton.addActionListener(new ActionListener() {
 //            @Override
@@ -122,7 +124,7 @@ public class SendingEmail extends javax.swing.JFrame {
         taskOutput = new javax.swing.JTextArea();
         lb1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
@@ -235,6 +237,7 @@ public class SendingEmail extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
+                
                 new SendingEmail().setVisible(true);
             }
         });

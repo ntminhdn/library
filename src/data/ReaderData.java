@@ -133,6 +133,7 @@ public class ReaderData {
         System.out.println(sql);
         da.updateData(sql);
     }
+    
     public Icon loadIcon(String linkImage, int k, int m) {/*linkImage là tên icon, k kích thước chiều rộng mình muốn,m chiều dài và hàm này trả về giá trị là 1 icon.*/
         try {
             BufferedImage image = ImageIO.read(new File(linkImage));//đọc ảnh dùng BufferedImage
